@@ -31,7 +31,7 @@
     {
       "Sid": "ReadBootstrapVersion",
       "Effect": "Allow",
-      "Action": "ssm:GetParameter",
+      "Action": ["ssm:GetParameter", "ssm:GetParameters"],
       "Resource": "arn:aws:ssm:*:915632791698:parameter/cdk-bootstrap/*"
     },
     {
