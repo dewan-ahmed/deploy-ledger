@@ -1,0 +1,146 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CloudFormationStacks",
+      "Effect": "Allow",
+      "Action": "cloudformation:*",
+      "Resource": [
+        "arn:aws:cloudformation:*:915632791698:stack/DeployLedger*/*",
+        "arn:aws:cloudformation:*:915632791698:changeSet/*/*"
+      ]
+    },
+    {
+      "Sid": "CloudFormationAccountLevel",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:ValidateTemplate",
+        "cloudformation:ListStacks",
+        "cloudformation:EstimateTemplateCost",
+        "cloudformation:DescribeAccountLimits",
+        "cloudformation:CreateUploadBucket"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadCdkAssetsFromBootstrapBucket",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::cdk-*", "arn:aws:s3:::cdk-*/*"]
+    },
+    {
+      "Sid": "ReadBootstrapVersion",
+      "Effect": "Allow",
+      "Action": "ssm:GetParameter",
+      "Resource": "arn:aws:ssm:*:915632791698:parameter/cdk-bootstrap/*"
+    },
+    {
+      "Sid": "DynamoDbEventsTable",
+      "Effect": "Allow",
+      "Action": "dynamodb:*",
+      "Resource": "arn:aws:dynamodb:*:915632791698:table/DeployLedger*"
+    },
+    {
+      "Sid": "SqsQueues",
+      "Effect": "Allow",
+      "Action": "sqs:*",
+      "Resource": "arn:aws:sqs:*:915632791698:DeployLedger*"
+    },
+    {
+      "Sid": "LambdaFunctions",
+      "Effect": "Allow",
+      "Action": "lambda:*",
+      "Resource": [
+        "arn:aws:lambda:*:915632791698:function:DeployLedger*",
+        "arn:aws:lambda:*:915632791698:event-source-mapping:*"
+      ]
+    },
+    {
+      "Sid": "LambdaEventSourceMappings",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateEventSourceMapping",
+        "lambda:UpdateEventSourceMapping",
+        "lambda:DeleteEventSourceMapping",
+        "lambda:GetEventSourceMapping",
+        "lambda:ListEventSourceMappings"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "LogGroups",
+      "Effect": "Allow",
+      "Action": "logs:*",
+      "Resource": "arn:aws:logs:*:915632791698:log-group:*DeployLedger*"
+    },
+    {
+      "Sid": "LogsAccountLevel",
+      "Effect": "Allow",
+      "Action": "logs:DescribeLogGroups",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ApiGateway",
+      "Effect": "Allow",
+      "Action": "apigateway:*",
+      "Resource": "arn:aws:apigateway:*::/*"
+    },
+    {
+      "Sid": "CloudWatchAlarmsAndDashboard",
+      "Effect": "Allow",
+      "Action": "cloudwatch:*",
+      "Resource": [
+        "arn:aws:cloudwatch:*:915632791698:alarm:DeployLedger*",
+        "arn:aws:cloudwatch::915632791698:dashboard/deploy-ledger"
+      ]
+    },
+    {
+      "Sid": "CloudWatchDescribe",
+      "Effect": "Allow",
+      "Action": ["cloudwatch:DescribeAlarms", "cloudwatch:ListDashboards"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ManageStackRolesOnly",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:UpdateAssumeRolePolicy",
+        "iam:TagRole",
+        "iam:UntagRole",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies"
+      ],
+      "Resource": "arn:aws:iam::915632791698:role/DeployLedger*"
+    },
+    {
+      "Sid": "PassStackRolesToServices",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::915632791698:role/DeployLedger*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": ["lambda.amazonaws.com", "apigateway.amazonaws.com"]
+        }
+      }
+    },
+    {
+      "Sid": "DenyAdminAndPrivilegeEscalation",
+      "Effect": "Deny",
+      "Action": ["iam:AttachRolePolicy", "iam:PutRolePolicy"],
+      "Resource": "*",
+      "Condition": {
+        "ArnEquals": {
+          "iam:PolicyARN": "arn:aws:iam::aws:policy/AdministratorAccess"
+        }
+      }
+    }
+  ]
+}
