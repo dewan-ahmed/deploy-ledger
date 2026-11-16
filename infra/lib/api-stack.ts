@@ -41,7 +41,18 @@ export class ApiStack extends cdk.Stack {
         }),
         projectRoot: APP_DIR,
         depsLockFilePath: path.join(APP_DIR, 'package-lock.json'),
-        bundling: { minify: true, sourceMap: true, target: 'node24' },
+        bundling: {
+          minify: true,
+          sourceMap: true,
+          target: 'node24',
+          commandHooks: {
+            // Runners that only install infra/ (e.g. Harness IaCM) have no app/node_modules, so esbuild is
+            // missing. inputDir is the bundling root (app/); install its dependencies once if absent.
+            beforeBundling: (inputDir: string) => [`cd ${inputDir} && { [ -d node_modules ] || npm ci; }`],
+            afterBundling: () => [],
+            beforeInstall: () => [],
+          },
+        },
       });
 
     const createEvent = makeFunction('CreateEvent', 'createEvent.ts', {
